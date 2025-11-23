@@ -1,461 +1,822 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เครื่องมือลบพื้นหลังรูปภาพ</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        .app-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-        
-        .upload-section {
-            flex: 1;
-            min-width: 300px;
-        }
-        
-        .preview-section {
-            flex: 1;
-            min-width: 300px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .upload-area {
-            border: 3px dashed rgba(255, 255, 255, 0.5);
-            border-radius: 15px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-        
-        .upload-area:hover {
-            border-color: white;
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .upload-icon {
-            font-size: 60px;
-            margin-bottom: 15px;
-        }
-        
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        label {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.2);
-            outline: none;
-            -webkit-appearance: none;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-        }
-        
-        button {
-            background: white;
-            color: #2575fc;
-            border: none;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-        
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .preview-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .preview-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            text-align: center;
-        }
-        
-        .image-container {
-            width: 100%;
-            height: 300px;
-            border-radius: 10px;
-            overflow: hidden;
-            background: rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .image-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        
-        .download-btn {
-            background: #4cd964;
-            color: white;
-            display: none;
-        }
-        
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .spinner {
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 5px solid white;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            opacity: 0.8;
-        }
-        
-        @media (max-width: 768px) {
-            .app-container {
-                flex-direction: column;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Background Remover (No API + AI) | GitHub Version</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO เบื้องต้น -->
+  <meta name="description" content="เว็บลบพื้นหลังรูปภาพแบบไม่ใช้ API ภายนอก มีทั้งโหมดเร็ว (สีพื้น) และโหมด AI (U²-Net / MODNet) รันได้บน GitHub Pages.">
+
+  <style>
+    :root {
+      --bg: #020617;
+      --card: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,0.2);
+      --accent-strong: rgba(56,189,248,0.9);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #f97373;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #020617, #000);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1200px;
+      background: radial-gradient(circle at top left, #020617, #020617);
+      border-radius: 24px;
+      box-shadow:
+        0 40px 80px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(148,163,184,0.2);
+      padding: 24px;
+      border: 1px solid rgba(148,163,184,0.25);
+      backdrop-filter: blur(20px);
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 20px var(--accent-strong);
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      border: 1px solid rgba(148,163,184,0.4);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(10px);
+    }
+
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 12px rgba(34,197,94,0.8);
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .content {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .panel {
+      background: radial-gradient(circle at top left, #020617, #020617);
+      border-radius: var(--radius);
+      padding: 16px;
+      border: 1px solid rgba(148,163,184,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: -80px -80px auto auto;
+      background: radial-gradient(circle at center, rgba(56,189,248,0.14), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel h2 {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: #cbd5f5;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .dropzone {
+      border-radius: 14px;
+      border: 1px dashed rgba(148,163,184,0.7);
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      background: rgba(15,23,42,0.7);
+    }
+
+    .dropzone.dragover {
+      border-color: var(--accent);
+      background: rgba(15,23,42,0.95);
+      box-shadow: 0 0 0 1px var(--accent-soft);
+    }
+
+    .dz-title {
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .dz-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .dz-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(148,163,184,0.7);
+      color: var(--muted);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .preview-box {
+      margin-top: 14px;
+      background: rgba(15,23,42,0.9);
+      border-radius: 12px;
+      padding: 8px;
+      border: 1px solid rgba(31,41,55,0.9);
+      max-height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+    }
+
+    .preview-box canvas,
+    .preview-box img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      image-rendering: high-quality;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .control-group {
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 160px;
+      flex: 1;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+    }
+
+    .control-group span.value {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .mode-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .mode-options label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.4);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .mode-options input[type="radio"] {
+      accent-color: #38bdf8;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: 0.2s transform, 0.2s box-shadow, 0.2s background;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: #0b1120;
+      box-shadow: 0 10px 30px rgba(56,189,248,0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(56,189,248,0.5);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid rgba(148,163,184,0.7);
+    }
+
+    .btn-outline:hover {
+      background: rgba(15,23,42,0.9);
+    }
+
+    .status {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 8px;
+      min-height: 18px;
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .small-note {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>เครื่องมือลบพื้นหลังรูปภาพ</h1>
-            <p class="subtitle">อัปโหลดรูปภาพและลบพื้นหลังได้อย่างง่ายดาย</p>
-        </header>
-        
-        <div class="app-container">
-            <div class="upload-section">
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📁</div>
-                    <h3>อัปโหลดรูปภาพของคุณ</h3>
-                    <p>คลิกหรือลากรูปภาพมาวางที่นี่</p>
-                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
-                </div>
-                
-                <div class="controls">
-                    <div class="control-group">
-                        <label for="sensitivity">ความไวในการตรวจจับพื้นหลัง:</label>
-                        <input type="range" id="sensitivity" min="1" max="100" value="50">
-                        <div id="sensitivityValue">50%</div>
-                    </div>
-                    
-                    <div class="control-group">
-                        <label for="smoothness">ความเรียบของขอบ:</label>
-                        <input type="range" id="smoothness" min="1" max="100" value="30">
-                        <div id="smoothnessValue">30%</div>
-                    </div>
-                    
-                    <button id="processBtn" disabled>ลบพื้นหลัง</button>
-                </div>
-            </div>
-            
-            <div class="preview-section">
-                <div class="preview-container">
-                    <div class="preview-title">รูปภาพต้นฉบับ</div>
-                    <div class="image-container">
-                        <img id="originalImage" src="" alt="รูปภาพต้นฉบับ" style="display: none;">
-                        <p id="originalPlaceholder">รูปภาพจะปรากฏที่นี่</p>
-                    </div>
-                </div>
-                
-                <div class="preview-container">
-                    <div class="preview-title">รูปภาพหลังลบพื้นหลัง</div>
-                    <div class="image-container">
-                        <img id="processedImage" src="" alt="รูปภาพหลังลบพื้นหลัง" style="display: none;">
-                        <p id="processedPlaceholder">ผลลัพธ์จะปรากฏที่นี่</p>
-                    </div>
-                </div>
-                
-                <button id="downloadBtn" class="download-btn" disabled>ดาวน์โหลดรูปภาพ</button>
-            </div>
+  <div class="app">
+    <div class="app-header">
+      <div>
+        <div class="title">
+          <span class="logo-dot"></span>
+          Background Remover (No API + AI)
         </div>
-        
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>กำลังประมวลผลภาพ...</p>
+        <div class="subtitle">
+          ลบพื้นหลังด้วย JavaScript + Canvas + AI (U²-Net / MODNet) | รันบน GitHub Pages | ทำงานในเบราว์เซอร์ 100%
         </div>
-        
-        <footer>
-            <p>สร้างด้วย HTML5 Canvas และ JavaScript | รองรับการใช้งานบน GitHub Pages</p>
-        </footer>
+      </div>
+      <div class="pill">
+        <span class="pill-dot"></span>
+        Client-side only · No external API
+      </div>
     </div>
 
-    <script>
-        // องค์ประกอบ DOM
-        const fileInput = document.getElementById('fileInput');
-        const uploadArea = document.getElementById('uploadArea');
-        const originalImage = document.getElementById('originalImage');
-        const processedImage = document.getElementById('processedImage');
-        const processBtn = document.getElementById('processBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const sensitivitySlider = document.getElementById('sensitivity');
-        const smoothnessSlider = document.getElementById('smoothness');
-        const sensitivityValue = document.getElementById('sensitivityValue');
-        const smoothnessValue = document.getElementById('smoothnessValue');
-        const originalPlaceholder = document.getElementById('originalPlaceholder');
-        const processedPlaceholder = document.getElementById('processedPlaceholder');
-        const loading = document.getElementById('loading');
+    <div class="content">
+      <!-- PANEL ซ้าย: อัปโหลดรูป -->
+      <div class="panel">
+        <div class="panel-inner">
+          <h2>1 · เลือกรูปภาพ</h2>
+          <p class="hint">รองรับ JPG / PNG / WEBP — แนะนำภาพความละเอียดไม่เกิน 8–10 MP (เพื่อความลื่น)</p>
 
-        // อัปเดตค่าสไลเดอร์
-        sensitivitySlider.addEventListener('input', () => {
-            sensitivityValue.textContent = `${sensitivitySlider.value}%`;
-        });
+          <label id="dropzone" class="dropzone">
+            <div class="dz-title">คลิกเพื่อเลือกไฟล์ หรือ ลากรูปมาวางที่นี่</div>
+            <div class="dz-sub">ไฟล์จะถูกประมวลผลในเบราว์เซอร์ของคุณ ไม่ถูกอัปโหลดขึ้นเซิร์ฟเวอร์</div>
+            <div class="dz-badge">
+              ⬆ สูงสุด ~5–10 MP (ขึ้นกับสเปกเครื่อง)
+            </div>
+            <input type="file" id="file-input" accept="image/*">
+          </label>
 
-        smoothnessSlider.addEventListener('input', () => {
-            smoothnessValue.textContent = `${smoothnessSlider.value}%`;
-        });
+          <div class="preview-box" id="original-box">
+            <span class="hint">ยังไม่มีรูปถูกเลือก</span>
+          </div>
+        </div>
+      </div>
 
-        // การจัดการการอัปโหลดไฟล์
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
+      <!-- PANEL ขวา: ประมวลผล + ดาวน์โหลด -->
+      <div class="panel">
+        <div class="panel-inner">
+          <h2>2 · เลือกโหมด & ลบพื้นหลัง</h2>
+          <p class="hint">
+            เลือกโหมดที่ต้องการ แล้วกด “ลบพื้นหลัง” จากนั้นสามารถดาวน์โหลด PNG พื้นหลังโปร่งใสได้
+          </p>
 
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = 'white';
-            uploadArea.style.background = 'rgba(255, 255, 255, 0.2)';
-        });
+          <!-- โหมดต่าง ๆ -->
+          <div class="controls">
+            <div class="control-group">
+              <label>โหมดลบพื้นหลัง</label>
+              <div class="mode-options">
+                <label><input type="radio" name="mode" value="fast" checked> แบบเร็ว (สีพื้น)</label>
+                <label><input type="radio" name="mode" value="ai-u2net"> AI – U²-Net</label>
+                <label><input type="radio" name="mode" value="ai-modnet"> AI – MODNet</label>
+              </div>
+              <small>แบบเร็วเหมาะกับพื้นหลังสีเรียบ · โหมด AI เหมาะกับภาพซับซ้อน (คน, ตัวละคร, ของ)</small>
+            </div>
+          </div>
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.5)';
-            uploadArea.style.background = 'transparent';
-        });
+          <!-- ค่า Threshold / Feather (ใช้กับโหมดเร็วเป็นหลัก) -->
+          <div class="controls">
+            <div class="control-group">
+              <label for="threshold">ความเข้มงวดในการลบพื้นหลัง (ใช้กับโหมดเร็ว)</label>
+              <input id="threshold" type="range" min="5" max="150" value="60">
+              <div>ค่า: <span class="value" id="threshold-value">60</span></div>
+              <small>ค่าน้อย = ลบน้อย, ค่าสูง = ลบมาก</small>
+            </div>
 
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.5)';
-            uploadArea.style.background = 'transparent';
-            
-            if (e.dataTransfer.files.length) {
-                handleImageUpload(e.dataTransfer.files[0]);
-            }
-        });
+            <div class="control-group">
+              <label for="feather">เกลี่ยขอบ (Feather)</label>
+              <input id="feather" type="range" min="0" max="30" value="8">
+              <div>พิกเซล: <span class="value" id="feather-value">8</span></div>
+              <small>ช่วยให้ขอบไม่แข็งจนเกินไป (มีผลกับโหมดเร็วชัดที่สุด)</small>
+            </div>
+          </div>
 
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                handleImageUpload(e.target.files[0]);
-            }
-        });
+          <div class="controls">
+            <button class="btn-primary" id="process-btn">
+              ⚙ ลบพื้นหลัง
+            </button>
+            <button class="btn-outline" id="download-btn" disabled>
+              ⬇ ดาวน์โหลด PNG พื้นหลังโปร่งใส
+            </button>
+          </div>
 
-        // ฟังก์ชันจัดการการอัปโหลดภาพ
-        function handleImageUpload(file) {
-            if (!file.type.match('image.*')) {
-                alert('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น');
-                return;
-            }
+          <div class="status" id="status"></div>
 
-            const reader = new FileReader();
-            
-            reader.onload = (e) => {
-                originalImage.src = e.target.result;
-                originalImage.style.display = 'block';
-                originalPlaceholder.style.display = 'none';
-                processBtn.disabled = false;
-                
-                // รีเซ็ตภาพที่ประมวลผลแล้ว
-                processedImage.src = '';
-                processedImage.style.display = 'none';
-                processedPlaceholder.style.display = 'block';
-                downloadBtn.disabled = true;
-                downloadBtn.style.display = 'none';
-            };
-            
-            reader.readAsDataURL(file);
+          <div class="preview-box" id="result-box">
+            <span class="hint">ผลลัพธ์จะแสดงที่นี่หลังจากประมวลผล</span>
+          </div>
+
+          <p class="small-note">
+            หมายเหตุ: โหมด AI จะโหลดโมเดลครั้งแรกอาจใช้เวลาเล็กน้อย (ครั้งต่อไปจะเร็วขึ้นเพราะแคชไว้ในหน้านั้นแล้ว)
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- แคนวาสซ่อนสำหรับประมวลผล -->
+    <canvas id="hidden-canvas" style="display:none;"></canvas>
+  </div>
+
+  <!-- onnxruntime-web สำหรับรันโมเดล AI -->
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+
+  <script>
+    // ==== DOM และตัวแปรพื้นฐาน ====
+    const fileInput = document.getElementById('file-input');
+    const dropzone = document.getElementById('dropzone');
+    const originalBox = document.getElementById('original-box');
+    const resultBox = document.getElementById('result-box');
+    const hiddenCanvas = document.getElementById('hidden-canvas');
+    const processBtn = document.getElementById('process-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const statusEl = document.getElementById('status');
+    const thresholdInput = document.getElementById('threshold');
+    const featherInput = document.getElementById('feather');
+    const thresholdValue = document.getElementById('threshold-value');
+    const featherValue = document.getElementById('feather-value');
+    const modeRadios = document.querySelectorAll('input[name="mode"]');
+
+    let currentMode = 'fast';
+    let loadedImage = null;
+    let lastResultDataURL = null;
+
+    modeRadios.forEach(r => {
+      if (r.checked) currentMode = r.value;
+      r.addEventListener('change', () => {
+        currentMode = r.value;
+        setStatus('โหมดปัจจุบัน: ' + getModeLabel(currentMode));
+      });
+    });
+
+    function getModeLabel(mode) {
+      if (mode === 'ai-u2net') return 'AI – U²-Net';
+      if (mode === 'ai-modnet') return 'AI – MODNet';
+      return 'แบบเร็ว (สีพื้น)';
+    }
+
+    thresholdInput.addEventListener('input', () => {
+      thresholdValue.textContent = thresholdInput.value;
+    });
+    featherInput.addEventListener('input', () => {
+      featherValue.textContent = featherInput.value;
+    });
+
+    function setStatus(msg, isError = false) {
+      statusEl.textContent = msg || '';
+      statusEl.classList.toggle('error', !!isError);
+    }
+
+    // ==== อัปโหลดรูป ====
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handleFile(file);
+    });
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) {
+        setStatus('กรุณาเลือกไฟล์รูปภาพเท่านั้น', true);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const img = new Image();
+        img.onload = function() {
+          loadedImage = img;
+          showOriginalPreview(img);
+          setStatus('โหลดรูปสำเร็จ: ' + img.width + '×' + img.height + ' พิกเซล');
+          lastResultDataURL = null;
+          downloadBtn.disabled = true;
+          clearResultPreview();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+      setStatus('กำลังโหลดรูปภาพ...');
+    }
+
+    function showOriginalPreview(img) {
+      originalBox.innerHTML = '';
+      originalBox.appendChild(img.cloneNode());
+    }
+
+    function clearResultPreview() {
+      resultBox.innerHTML = '<span class="hint">ผลลัพธ์จะแสดงที่นี่หลังจากประมวลผล</span>';
+    }
+
+    // ==== เมื่อกดปุ่มลบพื้นหลัง ====
+    processBtn.addEventListener('click', async () => {
+      if (!loadedImage) {
+        setStatus('กรุณาเลือกรูปก่อน', true);
+        return;
+      }
+
+      try {
+        setStatus('กำลังประมวลผลด้วยโหมด: ' + getModeLabel(currentMode));
+        lastResultDataURL = null;
+        downloadBtn.disabled = true;
+
+        let resultURL;
+        if (currentMode === 'fast') {
+          // โหมดเดิม: ลบพื้นหลังสีพื้น
+          const threshold = parseFloat(thresholdInput.value) || 60;
+          const feather = parseInt(featherInput.value) || 0;
+          resultURL = removeBackgroundFast(loadedImage, threshold, feather);
+        } else {
+          // โหมด AI
+          resultURL = await removeBackgroundAI(loadedImage, currentMode);
         }
 
-        // ฟังก์ชันลบพื้นหลัง
-        processBtn.addEventListener('click', () => {
-            if (!originalImage.src) return;
-            
-            loading.style.display = 'block';
-            
-            // จำลองการประมวลผล (ในเวอร์ชันจริงจะใช้โค้ดลบพื้นหลังจริง)
-            setTimeout(() => {
-                removeBackground();
-                loading.style.display = 'none';
-            }, 1500);
-        });
-
-        // ฟังก์ชันลบพื้นหลัง (จำลอง)
-        function removeBackground() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // ตั้งค่าขนาด canvas ให้เท่ากับรูปภาพ
-            canvas.width = originalImage.naturalWidth;
-            canvas.height = originalImage.naturalHeight;
-            
-            // วาดรูปภาพลงบน canvas
-            ctx.drawImage(originalImage, 0, 0);
-            
-            // ดึงข้อมูลพิกเซล
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-            
-            // รับค่าจากสไลเดอร์
-            const sensitivity = sensitivitySlider.value / 100;
-            const smoothness = smoothnessSlider.value / 10;
-            
-            // ตรวจจับและลบพื้นหลัง (อัลกอริทึมพื้นฐาน)
-            // ในที่นี้เราจะใช้วิธีง่ายๆ โดยตรวจจับสีที่ใกล้เคียงกับสีมุมบนซ้าย
-            const baseColor = {
-                r: data[0],
-                g: data[1],
-                b: data[2]
-            };
-            
-            // ฟังก์ชันคำนวณความแตกต่างของสี
-            function colorDistance(r1, g1, b1, r2, g2, b2) {
-                return Math.sqrt(
-                    Math.pow(r1 - r2, 2) + 
-                    Math.pow(g1 - g2, 2) + 
-                    Math.pow(b1 - b2, 2)
-                );
-            }
-            
-            // ประมวลผลแต่ละพิกเซล
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                
-                // คำนวณความแตกต่างจากสีฐาน
-                const distance = colorDistance(r, g, b, baseColor.r, baseColor.g, baseColor.b);
-                
-                // ถ้าความแตกต่างน้อยกว่า threshold ให้ตั้งค่า alpha เป็น 0 (โปร่งใส)
-                if (distance < 100 * sensitivity) {
-                    data[i + 3] = 0; // Alpha channel
-                } else if (distance < 100 * sensitivity + smoothness) {
-                    // ทำให้ขอบนุ่มขึ้น
-                    const alpha = (distance - 100 * sensitivity) / smoothness;
-                    data[i + 3] = Math.min(255, Math.max(0, Math.floor(alpha * 255)));
-                }
-            }
-            
-            // อัพเดทข้อมูลภาพ
-            ctx.putImageData(imageData, 0, 0);
-            
-            // แสดงผลลัพธ์
-            processedImage.src = canvas.toDataURL('image/png');
-            processedImage.style.display = 'block';
-            processedPlaceholder.style.display = 'none';
-            
-            // เปิดใช้งานปุ่มดาวน์โหลด
-            downloadBtn.disabled = false;
-            downloadBtn.style.display = 'block';
+        if (resultURL) {
+          showResult(resultURL);
+          lastResultDataURL = resultURL;
+          downloadBtn.disabled = false;
+          setStatus('ประมวลผลสำเร็จ! สามารถดาวน์โหลดไฟล์ PNG ได้แล้ว');
+        } else {
+          setStatus('ประมวลผลไม่สำเร็จ', true);
         }
+      } catch (err) {
+        console.error(err);
+        setStatus('เกิดข้อผิดพลาด: ' + err.message, true);
+      }
+    });
 
-        // ฟังก์ชันดาวน์โหลด
-        downloadBtn.addEventListener('click', () => {
-            if (!processedImage.src) return;
-            
-            const link = document.createElement('a');
-            link.download = 'ภาพที่ลบพื้นหลังแล้ว.png';
-            link.href = processedImage.src;
-            link.click();
-        });
-    </script>
+    // ==== โหมดเร็ว (สีพื้น) ====
+    function removeBackgroundFast(img, threshold, feather) {
+      const canvas = hiddenCanvas;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let data = imageData.data;
+      const w = canvas.width;
+      const h = canvas.height;
+
+      const bgColor = getAverageCornerColor(data, w, h);
+      const mask = new Float32Array(w * h);
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const idx = (y * w + x) * 4;
+          const r = data[idx];
+          const g = data[idx + 1];
+          const b = data[idx + 2];
+
+          const dist = colorDistance([r, g, b], bgColor);
+          const isBg = dist < threshold ? 1 : 0;
+          mask[y * w + x] = isBg;
+        }
+      }
+
+      if (feather > 0) {
+        blurMask(mask, w, h, feather);
+      }
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const idx = (y * w + x) * 4;
+          const m = mask[y * w + x];
+          if (m >= 0.99) {
+            data[idx + 3] = 0;
+          } else if (m > 0 && m < 0.99) {
+            const alpha = data[idx + 3];
+            data[idx + 3] = alpha * (1 - m);
+          }
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      return canvas.toDataURL('image/png');
+    }
+
+    function getAverageCornerColor(data, w, h) {
+      function getPixel(x, y) {
+        const idx = (y * w + x) * 4;
+        return [data[idx], data[idx + 1], data[idx + 2]];
+      }
+
+      const samples = [
+        getPixel(0, 0),
+        getPixel(w - 1, 0),
+        getPixel(0, h - 1),
+        getPixel(w - 1, h - 1)
+      ];
+
+      const sum = samples.reduce(
+        (acc, c) => [acc[0] + c[0], acc[1] + c[1], acc[2] + c[2]],
+        [0, 0, 0]
+      );
+      return [sum[0] / 4, sum[1] / 4, sum[2] / 4];
+    }
+
+    function colorDistance(c1, c2) {
+      const dr = c1[0] - c2[0];
+      const dg = c1[1] - c2[1];
+      const db = c1[2] - c2[2];
+      return Math.sqrt(dr * dr + dg * dg + db * db);
+    }
+
+    function blurMask(mask, w, h, radius) {
+      const tmp = new Float32Array(mask.length);
+      const r = Math.max(1, radius);
+
+      // แนวนอน
+      for (let y = 0; y < h; y++) {
+        let sum = 0;
+        let count = 0;
+        const rowIndex = y * w;
+
+        for (let x = -r; x < w + r; x++) {
+          const addX = x + r;
+          const removeX = x - r - 1;
+
+          if (addX >= 0 && addX < w) {
+            sum += mask[rowIndex + addX];
+            count++;
+          }
+          if (removeX >= 0 && removeX < w) {
+            sum -= mask[rowIndex + removeX];
+            count--;
+          }
+
+          if (x >= 0 && x < w) {
+            tmp[rowIndex + x] = sum / Math.max(count, 1);
+          }
+        }
+      }
+
+      // แนวตั้ง
+      for (let x = 0; x < w; x++) {
+        let sum = 0;
+        let count = 0;
+
+        for (let y = -r; y < h + r; y++) {
+          const addY = y + r;
+          const removeY = y - r - 1;
+
+          if (addY >= 0 && addY < h) {
+            sum += tmp[addY * w + x];
+            count++;
+          }
+          if (removeY >= 0 && removeY < h) {
+            sum -= tmp[removeY * w + x];
+            count--;
+          }
+
+          if (y >= 0 && y < h) {
+            mask[y * w + x] = sum / Math.max(count, 1);
+          }
+        }
+      }
+    }
+
+    // ==== โหมด AI: ใช้ U²-Net / MODNet ผ่าน onnxruntime ====
+    const aiSessions = {}; // cache ตาม path โมเดล
+
+    async function getSessionForMode(mode) {
+      let modelPath;
+      if (mode === 'ai-u2net') modelPath = 'models/u2net.onnx';
+      else modelPath = 'models/modnet.onnx';
+
+      if (aiSessions[modelPath]) return aiSessions[modelPath];
+
+      setStatus('กำลังโหลดโมเดล AI ครั้งแรก (อาจใช้เวลานิดหน่อย)...');
+      const session = await ort.InferenceSession.create(modelPath);
+      aiSessions[modelPath] = session;
+      return session;
+    }
+
+    async function removeBackgroundAI(img, mode) {
+      const session = await getSessionForMode(mode);
+
+      const origW = img.naturalWidth || img.width;
+      const origH = img.naturalHeight || img.height;
+
+      const size = 320; // ขนาด input โมเดล (ส่วนใหญ่ของ U²-Net / MODNet)
+      const tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = size;
+      tmpCanvas.height = size;
+      const tctx = tmpCanvas.getContext('2d');
+      tctx.drawImage(img, 0, 0, size, size);
+
+      const imgData = tctx.getImageData(0, 0, size, size);
+      const data = imgData.data;
+
+      // เตรียม tensor รูปแบบ [1,3,H,W] (CHW)
+      const input = new Float32Array(1 * 3 * size * size);
+      let idx = 0;
+      for (let c = 0; c < 3; c++) {
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size; x++) {
+            const i = (y * size + x) * 4;
+            const v = data[i + c] / 255;
+            input[idx++] = v;
+          }
+        }
+      }
+
+      const tensor = new ort.Tensor('float32', input, [1, 3, size, size]);
+
+      const feeds = {};
+      const inputName = session.inputNames ? session.inputNames[0] : 'input';
+      feeds[inputName] = tensor;
+
+      const results = await session.run(feeds);
+      const outputName = session.outputNames ? session.outputNames[0] : Object.keys(results)[0];
+      const output = results[outputName];
+      const maskData = output.data; // [1,1,H,W] flatten
+
+      // สร้าง mask 320×320 จากผลลัพธ์
+      const maskCanvas = document.createElement('canvas');
+      maskCanvas.width = size;
+      maskCanvas.height = size;
+      const mctx = maskCanvas.getContext('2d');
+      const maskImgData = mctx.createImageData(size, size);
+
+      for (let i = 0; i < size * size; i++) {
+        const v = Math.max(0, Math.min(1, maskData[i])) * 255;
+        maskImgData.data[i * 4 + 0] = 255;
+        maskImgData.data[i * 4 + 1] = 255;
+        maskImgData.data[i * 4 + 2] = 255;
+        maskImgData.data[i * 4 + 3] = v;
+      }
+      mctx.putImageData(maskImgData, 0, 0);
+
+      // ขยาย mask กลับไปขนาดเดิม
+      const alphaCanvas = document.createElement('canvas');
+      alphaCanvas.width = origW;
+      alphaCanvas.height = origH;
+      const actx = alphaCanvas.getContext('2d');
+      actx.drawImage(maskCanvas, 0, 0, origW, origH);
+      const alphaData = actx.getImageData(0, 0, origW, origH).data;
+
+      // ผสม alpha เข้ากับภาพต้นฉบับ
+      hiddenCanvas.width = origW;
+      hiddenCanvas.height = origH;
+      const hctx = hiddenCanvas.getContext('2d');
+      hctx.drawImage(img, 0, 0, origW, origH);
+      const outImgData = hctx.getImageData(0, 0, origW, origH);
+      const outPixels = outImgData.data;
+
+      for (let i = 0; i < origW * origH; i++) {
+        const a = alphaData[i * 4 + 3] / 255; // 0–1
+        outPixels[i * 4 + 3] = Math.round(a * 255);
+      }
+
+      hctx.putImageData(outImgData, 0, 0);
+      return hiddenCanvas.toDataURL('image/png');
+    }
+
+    // แสดงผลลัพธ์
+    function showResult(dataURL) {
+      const img = new Image();
+      img.onload = function() {
+        resultBox.innerHTML = '';
+        resultBox.appendChild(img);
+      };
+      img.src = dataURL;
+    }
+
+    // ปุ่มดาวน์โหลด
+    downloadBtn.addEventListener('click', () => {
+      if (!lastResultDataURL) return;
+      const a = document.createElement('a');
+      a.href = lastResultDataURL;
+      a.download = 'background-removed.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+  </script>
 </body>
 </html>
